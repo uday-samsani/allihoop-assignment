@@ -16,7 +16,7 @@ async function addShips(ships: [Ship]) {
 }
 
 const dailyStale = () => {
-    schedule.scheduleJob('*/1 * * * *', async () => {
+    schedule.scheduleJob('0 0 * * *', async () => {
         console.log('Scheduler: Staling ...');
         await staleShips();
         const result = await axios.get('https://api.spacexdata.com/v3/ships');
