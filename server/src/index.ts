@@ -6,9 +6,6 @@ import {buildSchema} from 'type-graphql';
 import ShipResolvers from './resolvers/ship';
 import {createConnection} from 'typeorm';
 import dailyStale from './utils/scheduler';
-import Ship from './entities/Ship';
-import schedule from 'node-schedule';
-import axios from 'axios';
 
 const main = async () => {
     try{
@@ -18,8 +15,6 @@ const main = async () => {
         console.log(error.message)
         console.log("Database connection failed")
     }
-
-
 
     const app = express();
 
