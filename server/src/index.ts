@@ -5,8 +5,22 @@ import {buildSchema} from 'type-graphql';
 
 import ShipResolvers from './resolvers/ship';
 import {createConnection} from 'typeorm';
+import dailyStale from './utils/scheduler';
+import Ship from './entities/Ship';
+import schedule from 'node-schedule';
+import axios from 'axios';
 
 const main = async () => {
+    try{
+        await createConnection()
+        console.log("Database connected successfully")
+    } catch (error) {
+        console.log(error.message)
+        console.log("Database connection failed")
+    }
+
+
+
     const app = express();
 
     const server = new ApolloServer({
@@ -18,19 +32,14 @@ const main = async () => {
 
     server.applyMiddleware({app, path: '/graphql'});
 
-    try{
-        await createConnection()
-        console.log("Database connected successfully")
-    } catch (error) {
-        console.log(error.message)
-        console.log("Database connection failed")
-    }
-
     const port = process.env.port || 4000;
 
     app.listen({port}, () => {
         console.log(`Graphql server listening on http://localhost:${port}${server.graphqlPath}`);
     });
+
+
+    dailyStale()
 };
 
 main().catch(err => {
