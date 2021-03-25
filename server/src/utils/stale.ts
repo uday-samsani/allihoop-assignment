@@ -3,25 +3,22 @@ import axios from 'axios';
 
 import Ship from '../entities/Ship';
 
-async function staleShips() {
+const staleShips = async () => {
     try {
         await Ship.delete({});
+        const result = await axios.get('https://api.spacexdata.com/v3/ships');
+        await Ship.save(result.data.filter((ship: Ship) => ship.year_built !== null));
     } catch (err) {
         console.log(err.message);
     }
-}
+};
 
-async function addShips(ships: [Ship]) {
-    await Ship.save(ships)
-}
-
-const dailyStale = () => {
+const dailyStaleSchedule = () => {
     schedule.scheduleJob('0 0 * * *', async () => {
         console.log('Scheduler: Staling ...');
         await staleShips();
-        const result = await axios.get('https://api.spacexdata.com/v3/ships');
-        await addShips(result.data);
         console.log('Scheduler: Staling complete');
     });
 };
-export default dailyStale;
+
+export {staleShips, dailyStaleSchedule};

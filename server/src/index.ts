@@ -5,7 +5,7 @@ import {buildSchema} from 'type-graphql';
 
 import ShipResolvers from './resolvers/ship';
 import {createConnection} from 'typeorm';
-import dailyStale from './utils/scheduler';
+import {dailyStaleSchedule,staleShips} from './utils/stale';
 
 const main = async () => {
     try{
@@ -33,8 +33,7 @@ const main = async () => {
         console.log(`Graphql server listening on http://localhost:${port}${server.graphqlPath}`);
     });
 
-
-    dailyStale()
+    dailyStaleSchedule()
 };
 
 main().catch(err => {
