@@ -27,6 +27,10 @@ class Ship extends BaseEntity {
     @Field(() => Int, {nullable: true})
     @Column({type: 'int', nullable: true})
     class!: string;
+
+    @Field(() => Int, {nullable: true})
+    @Column({type: 'int', nullable: true})
+    year_built!: number;
 }
 
 export default Ship;

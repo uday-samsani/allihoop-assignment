@@ -1,18 +1,24 @@
 import {Arg, Int, Query, Resolver} from 'type-graphql';
-import axios from 'axios';
 
 import Ship from '../entities/Ship';
+import {getConnection} from 'typeorm';
 
 @Resolver(Ship)
 class ShipResolvers {
     @Query(() => [Ship])
-    async getShips(): Promise<Ship[]> {
-        let ships: Ship[] = await Ship.find({});
-        if (!ships) {
-            const result = await axios.get('https://api.spacexdata.com/v3/ships');
-            ships = await Ship.save(result.data);
+    async getShips(
+        @Arg('limit', () => Int) limit: number,
+        @Arg('cursor', () => Int, {nullable: true}) cursor: number
+    ): Promise<Ship[]> {
+        const qb = await getConnection()
+            .getRepository(Ship)
+            .createQueryBuilder('s')
+            .orderBy('year_built', 'DESC')
+            .take(limit);
+        if (cursor) {
+            qb.where('year_built < :cursor', {cursor});
         }
-        return ships;
+        return qb.getMany();
     }
 
     @Query(() => [Ship])
@@ -20,15 +26,23 @@ class ShipResolvers {
         @Arg('shipType', () => String) shipType: string,
         @Arg('homePort', () => String) homePort: string,
         @Arg('weight', () => Int) weight: number,
+        @Arg('limit', () => Int) limit: number,
+        @Arg('cursor', () => Int, {nullable: true}) cursor: number
     ): Promise<Ship[]> {
-        const ships: Ship[] = await Ship.find({
-            where: {
+        const qb = await getConnection()
+            .getRepository(Ship)
+            .createQueryBuilder('s')
+            .where({
                 ship_type: shipType,
                 home_port: homePort,
                 weight_kg: weight
-            }
-        }) || [];
-        return ships;
+            })
+            .orderBy('year_built', 'DESC')
+            .take(limit);
+        if(cursor){
+            qb.where('year_built < :cursor', {cursor});
+        }
+        return qb.getMany();
     }
 }
 
