@@ -1,26 +1,29 @@
+import 'reflect-metadata'
 import express from 'express';
-import {ApolloServer, gql} from 'apollo-server-express';
+import {ApolloServer} from 'apollo-server-express';
+import {buildSchema} from 'type-graphql';
 
-const app = express();
+import ShipResolvers from './resolvers/ship';
 
-const typeDefs = gql`
-  type Query {
-    hello: String
-  }
-`;
+const main = async () => {
+    const app = express();
 
-const resolvers = {
-    Query: {
-        hello: () => 'Hello world!',
-    },
+    const server = new ApolloServer({
+        schema: await buildSchema({
+            resolvers: [ShipResolvers],
+            validate: false
+        })
+    });
+
+    server.applyMiddleware({app, path: '/graphql'});
+
+    const port = process.env.port || 4000;
+
+    app.listen({port}, () => {
+        console.log(`Graphql server listening on http://localhost:${port}${server.graphqlPath}`);
+    });
 };
 
-const server = new ApolloServer({typeDefs, resolvers});
-
-server.applyMiddleware({app, path: '/graphql'});
-
-const port = process.env.port || 4000;
-
-app.listen({port}, () => {
-    console.log(`Graphql server listening on http://localhost:${port}${server.graphqlPath}`);
+main().catch(err => {
+    console.log(err);
 });
