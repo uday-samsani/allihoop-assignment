@@ -56,16 +56,26 @@ const App: FC = (): ReactElement => {
 
     return (
         <div className={'container'}>
-            <h3>Ship Type</h3>
-            <input type="text" name={'shipType'} onChange={handleChange}/>
-            <h4>Home Port</h4>
-            <input type="text" name={'homePort'} onChange={handleChange}/>
-            <h4>Weight</h4>
-            <input type="text" name={'weight'} onChange={handleChange}/>
+            <div>
+                <div>
+                    <label>Ship Type</label>
+                    <input type="text" name={'shipType'} onChange={handleChange}/>
+                </div>
+                <div>
+                    <label>Home Port</label>
+                    <input type="text" name={'homePort'} onChange={handleChange}/>
+                </div>
+                <div>
+                    <label>Weight</label>
+                    <input type="text" name={'weight'} onChange={handleChange}/>
+                </div>
 
-            <input type={'button'} onClick={handleSearch} value={'submit'}/>
-            <table>
-                <tr>
+                <div>
+                    <input type={'button'} className={'btn'} onClick={handleSearch} value={'submit'}/>
+                </div>
+            </div>
+            <table className={'table'}>
+                <tr className={'tableHeader'}>
                     <th>Ship Type</th>
                     <th>Weight</th>
                     <th>Home port</th>
